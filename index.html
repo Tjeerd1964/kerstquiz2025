@@ -136,6 +136,21 @@
       from{ transform: translateY(-30px); }
       to{ transform: translateY(140px); }
     }
+    .fullscreenVoucher {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: #8b0000; /* kerst-rood */
+}
+
+.fullscreenVoucher .voucher {
+  width: 100vw;
+  height: 100vh;
+  border-radius: 0;
+  transform: none;
+  max-width: none;
+  box-shadow: none;
+}
 
   </style>
 </head>
@@ -145,24 +160,26 @@
 
 <div id="failOverlay" class="failOverlay" aria-hidden="true">✖</div>
 
-<div id="voucherOverlay" class="overlay">
+<div id="voucherOverlay" class="overlay fullscreenVoucher">
   <div class="voucher" role="dialog" aria-modal="true" aria-label="Waardebon">
+    <div class="snow"></div>
+
     <h3>🎁 Kerst-waardebon</h3>
     <div class="xmasRow">🎄 🎅 ✨ 🎁 🔔 🎄</div>
-    <div class="snow"></div>
-    <h3 style="margin-top:10px;">Gefeliciteerd! Jullie hebben de code goed en daarmee elk een schenking gewonnen.</h3>
-    <div class="amount">€ 6.713,00</div>
-    <div class="controls" style="justify-content:center; margin-top:10px;">
-      <button id="fsBtn" type="button">Fullscreen waardebon</button>
-    </div>
-    <p class="sub">UITBETAALMOMENT: VANDAAG.
-Stuur nu direct een Tikkie naar de heer Tj. Visser, a.k.a. pappa, a.k.a opa pake Tjeerd.</p>
-</div>
-    <p class="sub">Gefeliciteerd! Jullie hebben de code goed en daarmee elk een schenking gewonnen.
-UITBETAALMOMENT: VANDAAG. Stuur nu direct een Tikkie naar de heer Tj. Visser, a.k.a. pappa, a.k.a opa pake Tjeerd.</p>
-</div>
-</div>
 
+    <h3 style="margin-top:12px;">
+      Gefeliciteerd! Jullie hebben de code goed en daarmee elk een schenking gewonnen.
+    </h3>
+
+    <div class="amount">€ 6.713,00</div>
+
+    <p class="sub">
+      UITBETAALMOMENT: VANDAAG.<br>
+      Stuur nu direct een Tikkie naar de heer Tj. Visser,
+      a.k.a. pappa, a.k.a. opa pake Tjeerd.
+    </p>
+  </div>
+</div>
 <div class="wrap">
   <div class="card">
     <div class="row">
@@ -225,7 +242,7 @@ UITBETAALMOMENT: VANDAAG. Stuur nu direct een Tikkie naar de heer Tj. Visser, a.
     {
       id:"q2",
       topic:"Muziek",
-      prompt:"Op welke plek staat Hotel California van The Eagles dit jaar (2025) in de NPO Radio 2 Top 2000? (alleen het getal invullen)",
+      prompt:"Op welke plek staat Hotel California van The Eagles dit jaar (2025) in de NPO Radio 2 Top 2000?",
       expected:"3",
       yieldsDigit:"3",
       kind:"text"
@@ -233,7 +250,7 @@ UITBETAALMOMENT: VANDAAG. Stuur nu direct een Tikkie naar de heer Tj. Visser, a.
     {
       id:"q3",
       topic:"Voetbal",
-      prompt:"Hoe vaak is Johan Cruijff met Ajax landskampioen van Nederland geweest? (alleen het getal invullen)",
+      prompt:"Hoe vaak is Johan Cruijff met Ajax landskampioen van Nederland geweest?",
       expected:"6",
       yieldsDigit:"6",
       kind:"text"
