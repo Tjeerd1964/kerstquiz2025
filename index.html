@@ -1,0 +1,742 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Kerst Quiz</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
+    body { margin:0; background:#0b1020; color:#f3f5ff; }
+    .wrap { max-width: 960px; margin: 0 auto; padding: 18px; }
+    .card { background: rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.14); border-radius: 16px;
+            padding: 16px; margin: 12px 0; box-shadow: 0 10px 30px rgba(0,0,0,.25); }
+    h1 { margin:0 0 6px; font-size: 22px; }
+    h2 { margin:0 0 6px; font-size: 18px; }
+    p { margin: 8px 0 0; line-height: 1.35; color: rgba(243,245,255,.92); }
+    .row { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap: wrap; }
+    .pill { display:inline-flex; gap:10px; align-items:center; background: rgba(255,255,255,.08);
+            padding: 10px 12px; border-radius: 14px; border:1px solid rgba(255,255,255,.10); }
+    .topic { font-weight: 800; }
+    .muted { color: rgba(243,245,255,.7); font-size: 12px; }
+    .controls{ display:flex; gap:10px; flex-wrap:wrap; margin-top: 12px; align-items:center; }
+    input[type="text"]{
+      padding:10px 12px; border:1px solid rgba(255,255,255,.25); border-radius: 12px; min-width: 260px;
+      font-size: 14px; background: rgba(0,0,0,.18); color:#fff; outline:none;
+    }
+    button{
+      padding:10px 12px; border:1px solid rgba(255,255,255,.55); border-radius: 12px;
+      background: rgba(255,255,255,.06); color:#fff; cursor:pointer; font-size: 14px;
+    }
+    button:hover{ background: rgba(255,255,255,.10); }
+    button:disabled{ opacity:.45; cursor:not-allowed; }
+    .ok { color: #5cff9a; font-weight: 800; }
+    .bad { color: #ff6b7a; font-weight: 800; }
+    .digits { font-weight: 900; letter-spacing: .14em; }
+    .meter { width: 220px; height: 10px; border-radius: 999px; overflow:hidden; background: rgba(255,255,255,.10); }
+    .meter > div { height:100%; width:100%; transform-origin: left center; background: rgba(255,255,255,.70); }
+    .big { font-weight: 900; font-size: 18px; }
+    .final { border:2px dashed rgba(255,255,255,.55); }
+    .digitBtn{ min-width: 60px; padding: 12px 0; font-size: 18px; font-weight: 900; }
+    .codeBox{ font-size: 24px; letter-spacing: .28em; font-weight: 900; }
+
+    canvas#fx { position: fixed; inset: 0; pointer-events: none; z-index: 9999; }
+
+    .overlay {
+      position: fixed; inset: 0; display:none; align-items:center; justify-content:center;
+      background: rgba(0,0,0,.72); z-index: 9998;
+    }
+    .voucher {
+      width: min(740px, 94vw);
+      border-radius: 22px;
+      background: rgba(18,24,44,.96);
+      border: 1px solid rgba(255,255,255,.22);
+      box-shadow: 0 30px 80px rgba(0,0,0,.55);
+      transform: scale(1.25);
+      transform-origin: center;
+      padding: 22px 22px 24px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .voucher:before{
+      content:"";
+      position:absolute; inset:-60px;
+      background: radial-gradient(circle at 20% 20%, rgba(255,255,255,.20), transparent 40%),
+                  radial-gradient(circle at 80% 30%, rgba(255,255,255,.16), transparent 45%),
+                  radial-gradient(circle at 30% 80%, rgba(255,255,255,.12), transparent 45%);
+      filter: blur(2px);
+    }
+    .voucher > * { position: relative; }
+    .voucher h3{ margin:0; font-size: 20px; letter-spacing:.02em; }
+    .amount{ font-size: 56px; font-weight: 1000; letter-spacing: .02em; margin: 10px 0 12px; }
+    .sub{ color: rgba(243,245,255,.94); margin: 0; white-space: pre-line; font-size: 15px; line-height: 1.35; }
+    .smallnote{ font-size: 12px; color: rgba(243,245,255,.75); margin-top: 12px; }
+  
+    /* Big fail cross overlay */
+    .failOverlay{
+      position: fixed; inset: 0;
+      display:none; align-items:center; justify-content:center;
+      z-index: 10000;
+      background: rgba(0,0,0,.62);
+      font-size: min(260px, 34vw);
+      font-weight: 1000;
+      color: rgba(255,40,70,0.99);
+      text-shadow: 0 12px 50px rgba(0,0,0,.75);
+      user-select: none;
+      animation: none;
+    }
+    .failOverlay.show{
+      display:flex;
+      animation: failPop 650ms ease-out both;
+    }
+    @keyframes failPop{
+      0%{ transform: scale(0.7); opacity: 0; }
+      20%{ transform: scale(1.05); opacity: 1; }
+      60%{ transform: scale(1.0); opacity: 1; }
+      100%{ transform: scale(0.98); opacity: 0; }
+    }
+
+    /* Festive voucher styling */
+    .voucher{
+      transform: scale(1.25);
+      background: linear-gradient(135deg, rgba(210,20,35,.95), rgba(120,12,22,.92));
+      border: 2px solid rgba(255,255,255,.35);
+    }
+    .voucher:before{
+      background:
+        radial-gradient(circle at 20% 20%, rgba(255,255,255,.22), transparent 45%),
+        radial-gradient(circle at 80% 30%, rgba(255,255,255,.18), transparent 50%),
+        radial-gradient(circle at 30% 85%, rgba(255,255,255,.14), transparent 55%);
+      opacity: .9;
+    }
+    .voucher h3{ color: rgba(255,255,255,.98); }
+    .amount{ color: rgba(255,255,255,.98); }
+    .sub{ color: rgba(255,255,255,.96); }
+
+    /* Christmas icons banner */
+    .xmasRow{
+      display:flex; justify-content:center; gap:10px; flex-wrap:wrap;
+      margin: 8px 0 10px;
+      font-size: 22px;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,.35));
+    }
+
+    /* Falling snow (pure CSS) */
+    .voucher .snow{
+      position:absolute; inset:0; pointer-events:none; opacity:.75;
+      background-image:
+        radial-gradient(circle, rgba(255,255,255,.95) 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(255,255,255,.9) 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(255,255,255,.85) 1px, transparent 1.5px);
+      background-size: 110px 110px, 160px 160px, 220px 220px;
+      animation: snowFall 6s linear infinite;
+      mix-blend-mode: screen;
+    }
+    @keyframes snowFall{
+      from{ transform: translateY(-30px); }
+      to{ transform: translateY(140px); }
+    }
+
+  </style>
+</head>
+
+<body>
+<canvas id="fx"></canvas>
+
+<div id="failOverlay" class="failOverlay" aria-hidden="true">✖</div>
+
+<div id="voucherOverlay" class="overlay">
+  <div class="voucher" role="dialog" aria-modal="true" aria-label="Waardebon">
+    <h3>🎁 Kerst-waardebon</h3>
+    <div class="xmasRow">🎄 🎅 ✨ 🎁 🔔 🎄</div>
+    <div class="snow"></div>
+    <h3 style="margin-top:10px;">Gefeliciteerd! Jullie hebben de code goed en daarmee elk een schenking gewonnen.</h3>
+    <div class="amount">€ 6.713,00</div>
+    <div class="controls" style="justify-content:center; margin-top:10px;">
+      <button id="fsBtn" type="button">Fullscreen waardebon</button>
+    </div>
+    <p class="sub">UITBETAALMOMENT: VANDAAG.
+Stuur nu direct een Tikkie naar de heer Tj. Visser, a.k.a. pappa, a.k.a opa pake Tjeerd.</p>
+</div>
+    <p class="sub">Gefeliciteerd! Jullie hebben de code goed en daarmee elk een schenking gewonnen.
+UITBETAALMOMENT: VANDAAG. Stuur nu direct een Tikkie naar de heer Tj. Visser, a.k.a. pappa, a.k.a opa pake Tjeerd.</p>
+</div>
+</div>
+
+<div class="wrap">
+  <div class="card">
+    <div class="row">
+      <div>
+        <h1>De Slimste Mens – Kersteditie</h1>
+        <p>Jullie krijgen 20 seconden per vraag. Goed = kleurrijke confetti en door. Fout = groot kruis en terug naar het begin en opnieuw. Aan het eind heb je 6 cijfers verdiend. Zet de cijfers in de juiste volgorde en ga door naar de volgende stap!</p>
+      </div>
+
+      <div class="controls">
+        <div class="pill"><span class="muted">Punten</span> <span id="score" class="big">0</span></div>
+        <div class="pill">
+          <span class="muted">Tijd</span> <span id="timeLabel" class="big">--</span>
+          <div class="meter"><div id="timeBar"></div></div>
+        </div>
+        <button id="startBtn" type="button">Start</button>
+        <button id="startSoundBtn" type="button">Start met geluid</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="questions"></div>
+
+  <div class="card">
+    <div class="row">
+      <div class="pill">
+        <span><strong>Verdiende cijfers:</strong></span>
+        <span id="earned">nog geen</span>
+      </div>
+</div>
+  </div>
+
+  <div id="finalStage" class="card final" style="display:none;">
+    <h2>Eindspel: zet de cijfers in de juiste volgorde</h2>
+    <p>Klik op de cijfers en zet in de volgorde die jullie denken dat klopt.</p>
+
+    <div id="digitButtons" class="controls"></div>
+
+    <div class="controls">
+      <div><strong>Jullie code:</strong> <span id="pickedCode" class="codeBox"></span></div>
+      <button id="resetPick" type="button">Opnieuw</button>
+    </div>
+
+    <div id="finalMsg" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+<script>
+  const targetCode = "671300";
+  const secondsPerQuestion = 20;
+
+      const questions = [
+    {
+      id:"q1",
+      topic:"Logica",
+      prompt:"Als je in een kamer bent met 100 mensen, waarvan 99% linkshandig is, hoeveel linkshandige mensen moeten dan de kamer verlaten om het percentage te verlagen naar 98%?",
+      expected:"50",
+      yieldsDigit:"0",
+      kind:"text"
+    },
+    {
+      id:"q2",
+      topic:"Muziek",
+      prompt:"Op welke plek staat Hotel California van The Eagles dit jaar (2025) in de NPO Radio 2 Top 2000? (alleen het getal invullen)",
+      expected:"3",
+      yieldsDigit:"3",
+      kind:"text"
+    },
+    {
+      id:"q3",
+      topic:"Voetbal",
+      prompt:"Hoe vaak is Johan Cruijff met Ajax landskampioen van Nederland geweest? (alleen het getal invullen)",
+      expected:"6",
+      yieldsDigit:"6",
+      kind:"text"
+    },
+    {
+      id:"q4",
+      topic:"Politiek",
+      prompt:"Welk artikelnummer in de Nederlandse Grondwet gaat over vrijheid van meningsuiting?",
+      expected:"7",
+      yieldsDigit:"7",
+      kind:"text"
+    },
+    {
+      id:"q5",
+      topic:"Zuid-Afrika",
+      prompt:`Wat is ongeveer de rechtstreekse afstand (hemelsbreed) van Meppel (Nederland) naar Hoedspruit (Zuid-Afrika)? Kies het juiste antwoord:
+
+a) 6.500 km
+b) 7.800 km
+c) 8.900 km
+d) 10.300 km
+
+Antwoord met alleen de letter (A/B/C/D).`,
+      expected:"C",
+      yieldsDigit:"0",
+      kind:"mc"
+    },
+    {
+      id:"q6",
+      topic:"Raadsel",
+      prompt:"Onderweg naar de winkel liep ik een vrouw tegemoet. Deze vrouw had 2 rugzakken met in elke rugzak 3 katten, met elk 3 kittens. Katten en mensen bij elkaar, met z’n hoe velen liepen we naar de winkel?",
+      expected:"1",
+      yieldsDigit:"1",
+      kind:"text"
+    }
+  ];
+
+  const answers = {};
+  const solvedDigits = [];
+  const solvedQ = new Set();
+
+  let score = 0;
+  let roundActive = false;
+  let currentIdx = 0;
+  let timeLeft = secondsPerQuestion;
+  let timerHandle = null;
+  let pendingAdvance = null;
+
+  let finalStage = false;
+  let shuffledDigits = []; // [{id, v}]
+  let picked = []; // [{id, v}]
+
+  const $ = (id) => document.getElementById(id);
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      const tmp = a[i]; a[i] = a[j]; a[j] = tmp;
+    }
+    return a;
+  }
+
+  // --- audio: beeps + jingle ---
+  let audioCtx = null;
+  function getCtx(){ return audioCtx || (audioCtx = new (window.AudioContext || window.webkitAudioContext)()); }
+
+  function beep(ok){
+    try{
+      const c = getCtx();
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.frequency.value = ok ? 880 : 180;
+      g.gain.value = 0.06;
+      o.start();
+      setTimeout(() => o.stop(), ok ? 120 : 180);
+    }catch(e){}
+  }
+
+  function playJingle(){
+    try{
+      const c = getCtx();
+      const now = c.currentTime;
+      const melody = [523.25, 659.25, 783.99, 1046.50, 987.77, 783.99, 659.25, 783.99];
+      melody.forEach((freq, i) => {
+        const o = c.createOscillator();
+        const g = c.createGain();
+        o.type = "triangle";
+        o.frequency.value = freq;
+        o.connect(g); g.connect(c.destination);
+        const t0 = now + i * 0.14;
+        g.gain.setValueAtTime(0.0001, t0);
+        g.gain.exponentialRampToValueAtTime(0.09, t0 + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.12);
+        o.start(t0);
+        o.stop(t0 + 0.14);
+      });
+    }catch(e){}
+  }
+
+
+  function unlockAudio(){
+    try{
+      const c = getCtx();
+      if(c.state === "suspended") c.resume();
+      // tiny silent-ish click to unlock
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.frequency.value = 440;
+      g.gain.value = 0.0001;
+      o.start();
+      setTimeout(() => o.stop(), 30);
+    }catch(e){}
+  }
+
+  // --- FX canvas: colorful confetti + fireworks ---
+  const fx = $("fx");
+  const ctx = fx.getContext("2d");
+  let particles = [];
+  let anim = null;
+
+  function resizeFx(){
+    fx.width = window.innerWidth * devicePixelRatio;
+    fx.height = window.innerHeight * devicePixelRatio;
+    ctx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  }
+  window.addEventListener("resize", resizeFx);
+  resizeFx();
+
+  const colors = [
+    "rgba(255,99,132,0.95)",
+    "rgba(54,162,235,0.95)",
+    "rgba(255,206,86,0.95)",
+    "rgba(75,192,192,0.95)",
+    "rgba(153,102,255,0.95)",
+    "rgba(255,159,64,0.95)",
+    "rgba(240,240,255,0.95)"
+  ];
+
+  function startAnim(){
+    if (anim) return;
+    function tick(){
+      ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+      const alive = [];
+      for(const p of particles){
+        p.life -= 1;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += p.g;
+        p.rot += p.vr;
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, p.life / p.maxLife) * p.a;
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+        ctx.restore();
+
+        if(p.life > 0 && p.y < window.innerHeight + 80) alive.push(p);
+      }
+      particles = alive;
+      if(particles.length){
+        anim = requestAnimationFrame(tick);
+      } else {
+        anim = null;
+        ctx.clearRect(0,0,window.innerWidth, window.innerHeight);
+      }
+    }
+    anim = requestAnimationFrame(tick);
+  }
+
+  function confettiFor(durationMs){
+    const endAt = performance.now() + durationMs;
+    function burst(){
+      const cx = window.innerWidth * (0.25 + Math.random()*0.5);
+      const cy = window.innerHeight * (0.18 + Math.random()*0.28);
+      for(let i=0;i<130;i++){
+        const ang = Math.random() * Math.PI * 2;
+        const sp = 1.2 + Math.random() * 6.2;
+        particles.push({
+          x: cx, y: cy,
+          vx: Math.cos(ang) * sp,
+          vy: Math.sin(ang) * sp,
+          g: 0.08 + Math.random()*0.06,
+          w: 5 + Math.random()*9,
+          h: 4 + Math.random()*7,
+          a: 1.0,
+          life: 110 + Math.floor(Math.random()*70),
+          maxLife: 190,
+          rot: Math.random()*Math.PI,
+          vr: (Math.random()-0.5)*0.28,
+          color: colors[Math.floor(Math.random()*colors.length)]
+        });
+      }
+      startAnim();
+    }
+    burst();
+    const id = setInterval(() => {
+      if(performance.now() >= endAt){ clearInterval(id); return; }
+      burst();
+    }, 380);
+  }
+
+  function fireworksShow(){
+    // ~5 seconden vuurwerk
+    const start = performance.now();
+    const interval = setInterval(() => {
+      const cx = window.innerWidth * (0.15 + Math.random()*0.7);
+      const cy = window.innerHeight * (0.12 + Math.random()*0.35);
+      for(let i=0;i<240;i++){
+        const ang = Math.random() * Math.PI * 2;
+        const sp = 1.6 + Math.random() * 7.0;
+        particles.push({
+          x: cx, y: cy,
+          vx: Math.cos(ang) * sp,
+          vy: Math.sin(ang) * sp,
+          g: 0.06 + Math.random()*0.05,
+          w: 3 + Math.random()*4,
+          h: 3 + Math.random()*4,
+          a: 1.0,
+          life: 120 + Math.floor(Math.random()*70),
+          maxLife: 200,
+          rot: Math.random()*Math.PI,
+          vr: (Math.random()-0.5)*0.22,
+          color: colors[Math.floor(Math.random()*colors.length)]
+        });
+      }
+      startAnim();
+      if(performance.now() - start >= 5000){
+        clearInterval(interval);
+      }
+    }, 220);
+  }
+
+  // --- UI render ---
+  function renderScore(){ $("score").textContent = String(score); }
+
+  function renderTimer(){
+    $("timeLabel").textContent = timeLeft + "s";
+    const frac = timeLeft / secondsPerQuestion;
+    $("timeBar").style.transform = "scaleX(" + Math.max(0, frac) + ")";
+    $("timeBar").style.background = frac > 0.35 ? "rgba(255,255,255,.70)" : "rgba(255,107,122,.95)";
+  }
+
+  function renderEarned(){
+    const sorted = solvedDigits.slice().sort((a,b)=>Number(a)-Number(b));
+    $("earned").innerHTML = sorted.length ? '<span class="digits">' + sorted.join(" ") + "</span>" : "nog geen";
+  }
+
+  function setFeedback(qid, ok, msg){
+    const fb = $(qid + "_fb");
+    fb.textContent = msg;
+    fb.className = ok ? "ok" : "bad";
+  }
+
+  function renderQuestions(){
+    const container = $("questions");
+    container.innerHTML = "";
+
+    questions.forEach((q, idx) => {
+      const active = roundActive && idx === currentIdx;
+      const done = solvedQ.has(q.id);
+
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.opacity = active ? "1" : (done ? "0.65" : "0.55");
+
+      card.innerHTML =
+        '<div class="row">' +
+          '<div class="topic">' + q.topic + "</div>" +
+          '<div class="muted">Vraag ' + (idx+1) + "/" + questions.length + "</div>" +
+        "</div>" +
+        "<p>" + q.prompt + "</p>" +
+        '<div class="controls">' +
+          '<input type="text" id="' + q.id + '_input" placeholder="Jouw antwoord" ' + (active && !done ? "" : "disabled") + ">" +
+          '<button type="button" id="' + q.id + '_btn" ' + (active && !done ? "" : "disabled") + ">Check</button>" +
+          '<span id="' + q.id + '_fb"></span>' +
+        "</div>";
+
+      container.appendChild(card);
+
+      const input = $(q.id + "_input");
+      const btn = $(q.id + "_btn");
+
+      input.addEventListener("input", (e) => answers[q.id] = e.target.value);
+      input.addEventListener("keydown", (e) => { if (e.key === "Enter") submit(q, idx); });
+      btn.addEventListener("click", () => submit(q, idx));
+    });
+  }
+
+  function startTimer(){
+    clearInterval(timerHandle);
+    timerHandle = setInterval(() => {
+      timeLeft--;
+      renderTimer();
+      if(timeLeft <= 0){
+        resetToStart("Tijd op! Terug naar het begin.");
+      }
+    }, 1000);
+  }
+
+  function stop(){
+    roundActive = false;
+    clearInterval(timerHandle);
+    timerHandle = null;
+    clearTimeout(pendingAdvance);
+    pendingAdvance = null;
+    $("timeLabel").textContent = "--";
+    $("timeBar").style.transform = "scaleX(0)";
+    renderQuestions();
+  }
+
+  function resetState(){
+    Object.keys(answers).forEach(k => delete answers[k]);
+    solvedDigits.length = 0;
+    solvedQ.clear();
+    score = 0;
+    finalStage = false;
+    shuffledDigits = [];
+    picked = [];
+    $("finalStage").style.display = "none";
+    $("finalMsg").textContent = "";
+    $("pickedCode").textContent = "";
+    renderEarned();
+    renderScore();
+    $("voucherOverlay").style.display = "none";
+  }
+
+  function start(){
+    resetState();
+    roundActive = true;
+    currentIdx = 0;
+    timeLeft = secondsPerQuestion;
+    renderQuestions();
+    renderTimer();
+    startTimer();
+  }
+
+  function resetToStart(message){
+    beep(false);
+    const q = questions[currentIdx];
+    setFeedback(q.id, false, message);
+
+    // Show big red cross + haptic (where supported)
+    const fo = $("failOverlay");
+    if(fo){
+      fo.classList.remove("show");
+      // force reflow to restart animation
+      void fo.offsetWidth;
+      fo.classList.add("show");
+      setTimeout(() => fo.classList.remove("show"), 680);
+    }
+    if (navigator.vibrate) {
+      try { navigator.vibrate([120, 60, 120]); } catch(e) {}
+    }
+
+    stop();
+    setTimeout(() => start(), 760);
+  }
+
+  function nextQuestion(){
+    clearTimeout(pendingAdvance);
+    pendingAdvance = null;
+
+    if(currentIdx >= questions.length - 1){
+      stop();
+      startFinalStage();
+      return;
+    }
+    currentIdx += 1;
+    timeLeft = secondsPerQuestion;
+    renderQuestions();
+    renderTimer();
+    startTimer();
+  }
+
+  function submit(q, idx){
+    if(!roundActive || idx !== currentIdx) return;
+    if(solvedQ.has(q.id)) return;
+
+    const user = (answers[q.id] || "").trim();
+    if(!user){ setFeedback(q.id, false, "Vul eerst een antwoord in."); return; }
+
+    const normalized = (q.kind === "mc")
+      ? user.toUpperCase().replace(/[^A-Z0-9]/g,"")
+      : user;
+    const expected = (q.kind === "mc") ? q.expected.toUpperCase() : q.expected;
+    if(normalized === expected){
+      beep(true);
+      const gained = 10 + Math.max(0, timeLeft);
+      score += gained;
+      renderScore();
+
+      setFeedback(q.id, true, "Goed! Volgende vraag over 3s…");
+      solvedQ.add(q.id);
+      solvedDigits.push(q.yieldsDigit);
+      renderEarned();
+      renderQuestions();
+
+      confettiFor(5000); // 10s
+
+      clearInterval(timerHandle);
+      timerHandle = null;
+      pendingAdvance = setTimeout(() => nextQuestion(), 3000);
+    } else {
+      resetToStart("Fout! Terug naar het begin.");
+    }
+  }
+
+  // --- Final stage ---
+  function startFinalStage(){
+    finalStage = true;
+    shuffledDigits = shuffle(solvedDigits.map((v,i)=>({id:i, v})));
+    picked = [];
+
+    $("finalStage").style.display = "block";
+    $("finalMsg").textContent = "";
+    renderFinalButtons();
+    renderPicked();
+  }
+
+  function renderFinalButtons(){
+    const holder = $("digitButtons");
+    holder.innerHTML = "";
+    shuffledDigits.forEach(item => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "digitBtn";
+      b.textContent = item.v;
+      b.disabled = picked.some(p => p.id === item.id);
+      b.addEventListener("click", () => pickDigit(item));
+      holder.appendChild(b);
+    });
+  }
+
+  function renderPicked(){ $("pickedCode").textContent = picked.map(p=>p.v).join(""); }
+
+  function showVoucher(){
+    $("voucherOverlay").style.display = "flex";
+  }
+
+  function pickDigit(item){
+    if(picked.length >= 6) return;
+    if(picked.some(p => p.id === item.id)) return;
+
+    picked.push(item);
+    renderPicked();
+    renderFinalButtons();
+
+    if(picked.length === 6){
+      const code = picked.map(p=>p.v).join("");
+      if(code === targetCode){
+        beep(true);
+        $("finalMsg").innerHTML = '<span class="ok">Code correct! 🎉</span>';
+        showVoucher();
+        fireworksShow();
+        playJingle();
+      } else {
+        beep(false);
+        $("finalMsg").innerHTML = '<span class="bad">Niet goed. Jullie hadden ' + code + ". Klik Opnieuw.</span>";
+      }
+    }
+  }
+
+  function resetPick(){
+    picked = [];
+    $("finalMsg").textContent = "";
+    renderPicked();
+    renderFinalButtons();
+  }
+
+  // Init
+  renderQuestions();
+  renderEarned();
+  renderScore();
+  stop();
+
+  $("startBtn").addEventListener("click", () => start());
+  $("startSoundBtn").addEventListener("click", () => { unlockAudio(); beep(true); start(); });
+$("resetPick").addEventListener("click", resetPick);
+
+  $("voucherOverlay").addEventListener("click", (e) => {
+    if(e.target.id === "voucherOverlay") $("voucherOverlay").style.display = "none";
+  });
+
+  const fsBtn = $("fsBtn");
+  if(fsBtn){
+    fsBtn.addEventListener("click", async (e) => {
+      e.stopPropagation();
+      const el = document.querySelector(".voucher") || document.documentElement;
+      try{
+        if(el.requestFullscreen) await el.requestFullscreen();
+        else if(document.documentElement.requestFullscreen) await document.documentElement.requestFullscreen();
+      }catch(err){
+        // iOS/Safari may block; user can still use "Zet op beginscherm" for fullscreen-like.
+        alert("Fullscreen wordt door iOS soms geblokkeerd. Tip: open in Safari en kies ‘Zet op beginscherm’ voor fullscreen.");
+      }
+    });
+  }
+
+</script>
+</body>
+</html>
