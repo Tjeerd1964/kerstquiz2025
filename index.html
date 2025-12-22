@@ -165,12 +165,12 @@
   <div id="voucherOverlay" class="overlay" aria-hidden="true">
     <div class="voucher" role="dialog" aria-modal="true" aria-label="Waardebon">
       <div class="snow"></div>
-      <h3>🎁 Kerst-waardebon</h3>
+      <h1>🎁 Kerst-waardebon</h3>
       <div class="xmasRow">🎄 🎅 ✨ 🎁 🔔 🎄</div>
-      <h3 style="margin-top:12px;">Gefeliciteerd! Jullie hebben de code goed en daarmee elk een schenking gewonnen.</h3>
+      <h1 style="margin-top:12px;">Gefeliciteerd! Jullie hebben de code goed en daarmee elk een schenking gewonnen.</h3>
       <div class="amount">€ 6.713,00</div>
-      <p class="sub">UITBETAALMOMENT: VANDAAG.
-Stuur nu direct een Tikkie naar de heer Tj. Visser, a.k.a. pappa, a.k.a. opa pake Tjeerd.</p>
+      <h2 style="margin-top:12px;">UITBETAALMOMENT: VANDAAG.<br/>
+        Stuur nu direct een Tikkie naar de heer Tj. Visser, a.k.a. pappa, a.k.a. opa pake Tjeerd.</h3>
     </div>
   </div>
 
@@ -470,7 +470,7 @@ Antwoord met alleen de letter (A/B/C/D).`, expected:"C", yieldsDigit:"0", kind:"
         "<p>" + q.prompt.replace(/\n/g,"<br>") + "</p>" +
         '<div class="controls">' +
           '<input type="text" id="' + q.id + '_input" placeholder="Jouw antwoord" ' + (active && !done ? "" : "disabled") + ">" +
-          '<button type="button" id="' + q.id + '_btn" ' + (active && !done ? "" : "disabled") + ">Check</button>" +
+          '<button type="button" id="' + q.id + '_btn" ' + (active && !done ? "" : "disabled") + ">Check antwoord</button>" +
           '<span id="' + q.id + '_fb"></span>' +
         "</div>";
 
