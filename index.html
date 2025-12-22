@@ -7,7 +7,7 @@
   <style>
     :root{ font-family: system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
     *{ box-sizing:border-box; }
-    body{ margin:0; background:#0b1020; color:#f3f5ff; }
+    body{ margin:0; background:#750a02; color:#f3f5ff; }
 
     .wrap{ max-width: 980px; margin: 0 auto; padding: 18px; }
     .card{
@@ -178,18 +178,16 @@ Stuur nu direct een Tikkie naar de heer Tj. Visser, a.k.a. pappa, a.k.a. opa pak
     <div class="card">
       <div class="row">
         <div>
-          <h1>De Slimste Mens – Kersteditie</h1>
-          <p>Jullie krijgen 20 seconden per vraag. Goed = kleurrijke confetti en door. Fout = groot kruis en terug naar het begin en opnieuw. Aan het eind heb je 6 cijfers verdiend. Zet de cijfers in de juiste volgorde en ga door naar de volgende stap!</p>
+          <h1>De Slimste Broers – Kersteditie</h1>
+          <p>Jullie krijgen 20 seconden per vraag. <br/>Goed = kleurrijke confetti en door. <br/>Fout = groot kruis en terug naar het begin en opnieuw. <br/><br/>Aan het eind heb je 6 cijfers verdiend. Zet de cijfers in de juiste volgorde en kijk wat je gewonnen hebt!</p>
         </div>
 
         <div class="controls">
-          <div class="pill"><span class="muted">Punten</span> <span id="score" class="big">0</span></div>
           <div class="pill">
             <span class="muted">Tijd</span> <span id="timeLabel" class="big">--</span>
             <div class="meter"><div id="timeBar"></div></div>
           </div>
-          <button id="startBtn" type="button">Start</button>
-          <button id="startSoundBtn" type="button">Start met geluid</button>
+          <button id="startSoundBtn" type="button">Starten</button>
         </div>
       </div>
     </div>
@@ -226,8 +224,8 @@ Stuur nu direct een Tikkie naar de heer Tj. Visser, a.k.a. pappa, a.k.a. opa pak
 
   const questions = [
     { id:"q1", topic:"Logica", prompt:"Als je in een kamer bent met 100 mensen, waarvan 99% linkshandig is, hoeveel linkshandige mensen moeten dan de kamer verlaten om het percentage te verlagen naar 98%?", expected:"50", yieldsDigit:"0", kind:"text" },
-    { id:"q2", topic:"Muziek", prompt:"Op welke plek staat Hotel California van The Eagles dit jaar (2025) in de NPO Radio 2 Top 2000? (alleen het getal invullen)", expected:"3", yieldsDigit:"3", kind:"text" },
-    { id:"q3", topic:"Voetbal", prompt:"Hoe vaak is Johan Cruijff met Ajax landskampioen van Nederland geweest? (alleen het getal invullen)", expected:"6", yieldsDigit:"6", kind:"text" },
+    { id:"q2", topic:"Muziek", prompt:"Op welke plek staat Hotel California van The Eagles dit jaar (2025) in de NPO Radio 2 Top 2000?", expected:"3", yieldsDigit:"3", kind:"text" },
+    { id:"q3", topic:"Rekenen", prompt:"Ik ben een getal. Als je mij verdubbelt en er 4 bij optelt, krijg je 16. Wat ben ik?", expected:"6", yieldsDigit:"6", kind:"text" },
     { id:"q4", topic:"Politiek", prompt:"Welk artikelnummer in de Nederlandse Grondwet gaat over vrijheid van meningsuiting?", expected:"7", yieldsDigit:"7", kind:"text" },
     { id:"q5", topic:"Zuid-Afrika", prompt:`Wat is ongeveer de rechtstreekse afstand (hemelsbreed) van Meppel (Nederland) naar Hoedspruit (Zuid-Afrika)? Kies het juiste antwoord:
 
